@@ -102,9 +102,9 @@ include BASE_PATH_ADMIN . '/includes/header.php';
 
                                                         </div>
 
-                                                        <!-- <div class="my-2">
-                                                            <?php //echo $row['text'] ?>
-                                                        </div> -->
+                                                        <div class="my-2">
+                                                            <?php echo mb_substr($row['text'], 0, 100) ?>
+                                                        </div>
                                                         <!-- End Row -->
 
                                                     </div>
