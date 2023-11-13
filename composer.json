@@ -1,0 +1,7 @@
+{
+    "require": {
+       "guzzlehttp/guzzle": "^7.0",
+        "symfony/browser-kit": "^5.4",
+        "hflabs/dadata": "^22.3"
+    }
+}
