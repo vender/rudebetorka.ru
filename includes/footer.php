@@ -16,7 +16,37 @@
           new HSSideNav('.js-navbar-vertical-aside').init()
           // INITIALIZATION OF FORM SEARCH
           // =======================================================
-          new HSFormSearch('.js-form-search')
+          const searchField = new HSFormSearch('.js-form-search').getItem(0);
+          const serarchDropDown = document.querySelector('#searchDropdownMenu .card-body');
+          searchField.$el.addEventListener('input', async (e) => {
+            console.log(e);
+            if(e.srcElement.value.length == 10) {
+              serarchDropDown.innerHTML = '<p>Введите ИНН</p>';
+              const searchElem = document.createElement('div');
+              searchElem.classList.add('dropdown-item', 'bg-transparent', 'text-wrap');
+              const res = await GetCompData(e.srcElement.value);
+              const debtor = res.data;
+              if(debtor) {
+                searchElem.innerHTML = `
+                      <a href="#" id="${debtor.ИНН}" class="btn btn-soft-dark btn-xs rounded-pill" data-bs-inn="${debtor.ИНН}" data-bs-toggle="modal" data-bs-target="#editUserModal" >
+                      ${debtor.НаимСокр} <i class="bi-search ms-1"></i>
+                      </a>
+                `;
+                serarchDropDown.append(searchElem);           
+              }
+            } else {
+              serarchDropDown.innerHTML = '<p>Введите ИНН</p>';
+            }
+
+          });
+
+          document.querySelector('#clearSearchResultsIcon').addEventListener('click', async (e) => {
+            serarchDropDown.innerHTML = '<p>Введите ИНН</p>';
+          });
+
+          // 2723204352
+
+
           // INITIALIZATION OF BOOTSTRAP DROPDOWN
           // =======================================================
           HSBsDropdown.init()

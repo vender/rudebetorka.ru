@@ -25,6 +25,7 @@ $db->pageLimit = $pagelimit;
 // Get result of the query.
 $db->orderBy("id", "Desc");
 $db->where ("inwork != 'true'");
+$db->orWhere ("inwork", NULL, 'IS');
 $rows = $db->arraybuilder()->paginate('torgi t', $page, $select);
 $total_pages = $db->totalPages;
 

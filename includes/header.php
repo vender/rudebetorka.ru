@@ -119,8 +119,8 @@
                         <div id="searchDropdownMenu" class="hs-form-search-menu-content dropdown-menu dropdown-menu-form-search navbar-dropdown-menu-borderless">
                             <div class="card">
                                 <!-- Body -->
-                                <div class="card-body-height">
-                                    <div class="d-lg-none">
+                                <div class="card-body">
+                                    <!-- <div class="d-lg-none">
                                         <div class="input-group input-group-merge navbar-input-group mb-5">
                                             <div class="input-group-prepend input-group-text">
                                                 <i class="bi-search"></i>
@@ -131,17 +131,9 @@
                                                 <i class="bi-x-lg"></i>
                                             </a>
                                         </div>
-                                    </div>
+                                    </div> -->
 
-                                    <span class="dropdown-header">Результат поиска</span>
-
-                                    <div class="dropdown-item bg-transparent text-wrap">
-                                        <a href="#" id="2208017060" class="btn btn-soft-dark btn-xs rounded-pill" data-bs-inn="2208017060" data-bs-toggle="modal" data-bs-target="#editUserModal" >
-                                            ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ "ОМЕГА"<i class="bi-search ms-1"></i>
-                                        </a>
-                                    </div>
-
-                                    <div class="dropdown-divider"></div>
+                                    <p>Введите ИНН</p>
 
                                 </div>
                                 <!-- End Body -->
