@@ -120,3 +120,49 @@ function xss_clean($string = ''){
     return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
 
 }
+
+function search_inn($text) {
+    preg_match_all('#(?<!\d)\d{10}(?!\d)#', $text, $find_inn);
+
+    if(!empty($find_inn[0])) {
+
+        foreach($find_inn[0] as $inn) {
+            $nalog = file_get_contents('https://bo.nalog.ru/nbo/organizations/search?query='.$inn);
+            $nalog = json_decode($nalog, true);
+            $inn_status = '<span class="legend-indicator"></span>';
+            if(!empty($nalog['content'])) {
+                switch ($nalog['content'][0]['statusCode']) {
+                    case 'ACTIVE':
+                        $inn_status = '<span class="legend-indicator bg-success"></span>';
+                        break;
+                    case 'LIQUIDATION_STAGE':
+                        $inn_status = '<span class="legend-indicator bg-warning"></span>';
+                        break;
+                    case 'INACTIVE':
+                        $inn_status = '<span class="legend-indicator bg-danger"></span>';
+                        break;
+                }
+            }
+
+            $text = str_replace($inn, '<mark id="'.$inn.'" style="cursor: pointer;" data-bs-toggle="modal" data-bs-inn="'.$inn.'" data-bs-target="#editUserModal"><span data-bs-toggle="tooltip" data-bs-html="true" title="'.getBfoNalog($nalog).'">'.$inn_status.$inn.'</span></mark>', $text);
+        }
+        
+    };
+
+    return $text;
+}
+
+function getBfoNalog($nalog) {
+    if(!empty($nalog)) {
+        $output = '';
+        if(!empty($nalog['content'][0])){
+            foreach($nalog['content'][0]['bfo'] as $year) {
+                $output .= $year['period'].'г. - <span>'.number_format($year['actives'] * 1000, 0, ',', ' ').' ₽</span><br>';
+            }
+        } else {
+            $output = 'с 2019г. по 2022г. <br>данных нет';
+        }
+        
+        return $output;
+    }
+}

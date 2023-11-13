@@ -24,8 +24,8 @@ $client = new Client([
 $response = $client->request('POST', '/script/submit.php', [
     'form_params' => [
         'key' => 'login',
-        'mail' => 'venderu@gmail.com',
-        'pas' => 'JXD65284hc7'
+        'mail' => 'Syromyatnik0v@mail.ru',
+        'pas' => 'Sve0110Zz'
     ],
     'verify' => false
 ]);
@@ -48,8 +48,6 @@ $document = (string) $response->getBody();
 
 $html = str_get_html($document);
 
-// print_r(gettype($html));
-
 foreach($html->find('div.torg') as $l) {
     $number = $l->getAttribute('data-rel');
     $title = $l->find('.lot_info .main_info .info_head .num a', 0);
@@ -60,6 +58,13 @@ foreach($html->find('div.torg') as $l) {
     $debtor = $l->find('.lot_info .debtor a', 0);
     $debtor_id = explode('=', $debtor ? $debtor->getAttribute('href') : '');
     $lot_created = $l->find('.lot_info .main_info .price_info .created', 0);
+    if($l->find('.lot_info .notesBlock.dop_info_3 .dates tr', 0)) {
+        $dates_from = $l->find('.lot_info .notesBlock.dop_info_3 .dates tr', 0)->find('td',0);
+        $dates_torg = $l->find('.lot_info .notesBlock.dop_info_3 .dates tr', 1)->find('td',0);
+    } else {
+        $dates_from = '';
+        $dates_torg = '';
+    }
     
     $data_to_store = [
         'number'    => $number ? $number : false,
@@ -69,7 +74,9 @@ foreach($html->find('div.torg') as $l) {
         'step'      => $step ? $step->plaintext : '',
         'deposit'   => $deposit ? $deposit->plaintext : '',
         'debtor_id' => $debtor ? end($debtor_id) : null,
-        'lot_created' => $lot_created ? $lot_created->plaintext : ''
+        'lot_created' => $lot_created ? $lot_created->plaintext : '',
+        'dates_from' => $dates_from ? preg_replace("/  +/", '', $dates_from->innertext) : '',
+        'dates_torg' => $dates_torg ? preg_replace("/  +/", '', $dates_torg->innertext) : ''
     ];
 
     if(!empty($number)) {
@@ -77,6 +84,8 @@ foreach($html->find('div.torg') as $l) {
         $lot = $db->getOne ("torgi");
         if(!$lot) $last_id = $db->insert ('torgi', $data_to_store);
     }
+
+    // print_r($data_to_store);
 
     $db->where("debtor_id", $data_to_store['debtor_id']);
     $debtor_row = $db->getOne("debtors");
@@ -104,7 +113,6 @@ foreach($html->find('div.torg') as $l) {
         if(!empty($debtor_nalog['content'][0])) {
             $debtor_data['bo_nalog'] = json_encode($debtor_nalog['content'][0]);
         }
-
 
         $debtor_id = $db->insert('debtors', $debtor_data);
 

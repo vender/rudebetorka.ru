@@ -13,11 +13,12 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/animate.min.css" />
     <!-- Custom CSS -->
     <link href="/assets/css/vendor.min.css" rel="stylesheet">
     <link rel="preload" href="/assets/css/theme.min.css" data-hs-appearance="default" as="style">
     <link rel="preload" href="/assets/css/theme-dark.min.css" data-hs-appearance="dark" as="style">
-    <!-- <link href="/assets/css/admin.css" rel="stylesheet"> -->
+    <link href="/assets/css/admin.css" rel="stylesheet">
 
     <style data-hs-appearance-onload-styles>
         * {
@@ -52,12 +53,14 @@
     </script>
     <script src="/assets/js/theme-appearance.js"></script>
     <script>
-        window.addEventListener("load", function (event) {        
+        window.addEventListener("load", function(event) {
             const rootBody = document.getElementsByTagName('body')[0],
-            isMini =  window.localStorage.getItem('hs-navbar-vertical-aside-mini') === null ? false : true;            
+                isMini = window.localStorage.getItem('hs-navbar-vertical-aside-mini') === null ? false : true;
             if (isMini) {
                 rootBody.classList.add('navbar-vertical-aside-mini-mode')
             }
+
+
         });
     </script>
 </head>
@@ -88,15 +91,67 @@
                                     <i class="bi-search"></i>
                                 </div>
 
-                                <input type="search" class="js-form-search form-control" placeholder="Поиск..." aria-label="Поиск...">
+                                <input type="search" class="js-form-search form-control" placeholder="Поиск по ИНН" aria-label="Поиск по ИНН" data-hs-form-search-options='{
+                                "clearIcon": "#clearSearchResultsIcon",
+                                "dropMenuElement": "#searchDropdownMenu",
+                                "dropMenuOffset": 10,
+                                "toggleIconOnFocus": true,
+                                "activeClass": "focus"
+                                }'>
                                 <a class="input-group-append input-group-text" href="javascript:;">
-                                    <i id="clearSearchResultsIcon" class="bi-x-lg" style="display: none; opacity: 1.02333;"></i>
+                                    <i id="clearSearchResultsIcon" class="bi-x-lg"></i>
                                 </a>
                             </div>
                         </div>
+
+                        <button class="js-form-search js-form-search-mobile-toggle btn btn-ghost-secondary btn-icon rounded-circle d-lg-none" type="button" data-hs-form-search-options='{
+                                "clearIcon": "#clearSearchResultsIcon",
+                                "dropMenuElement": "#searchDropdownMenu",
+                                "dropMenuOffset": 20,
+                                "toggleIconOnFocus": true,
+                                "activeClass": "focus"
+                                }'>
+                            <i class="bi-search"></i>
+                        </button>
                         <!-- End Input Group -->
 
+                        <!-- Card Search Content -->
+                        <div id="searchDropdownMenu" class="hs-form-search-menu-content dropdown-menu dropdown-menu-form-search navbar-dropdown-menu-borderless">
+                            <div class="card">
+                                <!-- Body -->
+                                <div class="card-body-height">
+                                    <div class="d-lg-none">
+                                        <div class="input-group input-group-merge navbar-input-group mb-5">
+                                            <div class="input-group-prepend input-group-text">
+                                                <i class="bi-search"></i>
+                                            </div>
+
+                                            <input type="search" class="form-control" placeholder="Поиск по ИНН" aria-label="Поиск по ИНН">
+                                            <a class="input-group-append input-group-text" href="javascript:;">
+                                                <i class="bi-x-lg"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    <span class="dropdown-header">Результат поиска</span>
+
+                                    <div class="dropdown-item bg-transparent text-wrap">
+                                        <a href="#" id="2208017060" class="btn btn-soft-dark btn-xs rounded-pill" data-bs-inn="2208017060" data-bs-toggle="modal" data-bs-target="#editUserModal" >
+                                            ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ "ОМЕГА"<i class="bi-search ms-1"></i>
+                                        </a>
+                                    </div>
+
+                                    <div class="dropdown-divider"></div>
+
+                                </div>
+                                <!-- End Body -->
+
+                            </div>
+                        </div>
+                        <!-- End Card Search Content -->
+
                     </div>
+
                     <!-- End Search Form -->
                 </div>
 
@@ -158,7 +213,7 @@
             </div>
         </header>
 
-        <?php include_once(BASE_PATH.'/includes/left-menu.php'); ?>
+        <?php include_once(BASE_PATH . '/includes/left-menu.php'); ?>
 
-        <?php endif; ?>
-        <!-- The End of the Header -->
+    <?php endif; ?>
+    <!-- The End of the Header -->

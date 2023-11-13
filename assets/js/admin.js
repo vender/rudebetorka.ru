@@ -1,96 +1,372 @@
-// user-info
-$(document).ready(function() {
-    const userModal = new bootstrap.Modal(document.getElementById('userInfoModal'));
-    $('.user-info').on('click', function(e) {
-        e.preventDefault();
-        let userId = $(this).data('userid');
-        stats(userId, userModal);
-    });
+document.addEventListener('DOMContentLoaded', function(){ // Аналог $(document).ready(function(){
+    let modalWrapper = document.createElement("div");
+    modalWrapper.innerHTML = `
+        <div id="editUserModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editUserModalTitle" aria-hidden="true">
+            <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editUserModalTitle"></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Nav -->
+                        <div class="text-center">
+                            <ul class="nav nav-segment nav-pills mb-3" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="nav-one-eg1-tab" href="#nav-one-eg1" data-bs-toggle="pill" data-bs-target="#nav-one-eg1" role="tab" aria-controls="nav-one-eg1" aria-selected="true">Общее</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="nav-two-eg1-tab" href="#nav-two-eg1" data-bs-toggle="pill" data-bs-target="#nav-two-eg1" role="tab" aria-controls="nav-two-eg1" aria-selected="false">Связанные организации</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="nav-three-eg1-tab" href="#nav-three-eg1" data-bs-toggle="pill" data-bs-target="#nav-three-eg1" role="tab" aria-controls="nav-three-eg1" aria-selected="false">Финансы</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <!-- End Nav -->
 
-    $('#submit-user').on('click', function(e) {
-        e.preventDefault();
-        const form = $('#user-info-form');
-        let userId = form.data('userid');
-        let regionid = form.find('#region').data('regionid');
-        form.find('#region').val(regionid);
-
-        $.ajax({
-            type: "POST",
-            url: `customers/edit_customer.php?customer_id=${userId}`,
-            data: form.serialize(),
-            success: function(data) {
-                userModal.hide();
-            }
-        });
-
-    });
-
-});
-
-
-async function stats(customer_id, userModal) {
-    try {
-        const response = await fetch("user-info.php", {
-            method: "POST",
-            body: JSON.stringify({ "customer_id": customer_id }),
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        });
-        const result = await response.json();
-        console.log(result);
-
-        $('#userInfoModal').find('.modal-body').html(`
-            <form id="user-info-form" data-userid="${customer_id ? customer_id : ''}" >
-                <fieldset>
-                    <div class="row">
-                        <div class="col-md-7">
-                            <div class="mb-3">
-                                <input type="text" name="name" value='${result[0].name == null ? '' : result[0].name}' placeholder="Полное название" class="form-control" id="name" readonly>
-                            </div> 
-
-                            <div class="mb-3">
-                                <input type="text" name="region" value='${result[0].regionName == null ? '' : result[0].regionName}' data-regionid="${result[0].region == null ? '' : result[0].region}" placeholder="Web сайт" class="form-control" id="region" readonly>
+                        <!-- Tab Content -->
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="nav-one-eg1" role="tabpanel" aria-labelledby="nav-one-eg1-tab">
+                                <div id="comp_result">
+                                    <div class="d-flex justify-content-center">
+                                        <div class="spinner-border" role="status">
+                                            <span class="visually-hidden">Загрузка...</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="mb-3">
-                                <input name="url" value='${result[0].url == null ? '' : result[0]?.url}' placeholder="Web сайт" class="form-control"  type="text" id="url" readonly>
+                            <div class="tab-pane fade" id="nav-two-eg1" role="tabpanel" aria-labelledby="nav-two-eg1-tab">
+                                <div class="accordion accordion-flush" id="comp_relations">
+                                    <div class="d-flex justify-content-center">
+                                        <div class="spinner-border" role="status">
+                                            <span class="visually-hidden">Загрузка...</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="mb-3">
-                                <textarea name="socilas" rows="5" placeholder="Ссылки на страницы в соцсетях" class="form-control" id="address" readonly>${result[0].socilas == null ? '' : result[0].socilas}</textarea>
-                            </div>
-
-                            <div class="mb-3">
-                                <input name="fio" value='${result[0].fio == null ? '' : result[0].fio}'  placeholder="ФИО ведущего (ответственного)" class="form-control"  type="fio" readonly>
-                            </div>
-
-                            <div class="mb-3">
-                                <input name="phone" value='${result[0].phone == null ? '' : result[0].phone}' placeholder="Телефон ведущего (ответственного)" class="form-control"  type="text" id="phone" readonly>
-                            </div>
-
-                            <div class="mb-3">
-                                <input  type="email" name="email" value='${result[0].email == null ? '' : result[0].email}' placeholder="Email ведущего (ответственного)" class="form-control" id="email" readonly>
+                            <div class="tab-pane fade" id="nav-three-eg1" role="tabpanel" aria-labelledby="nav-three-eg1-tab">
+                                <div id="finansi">
+                                    <div class="d-flex justify-content-center">
+                                        <div class="spinner-border" role="status">
+                                            <span class="visually-hidden">Загрузка...</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-5">
-                            <div class="mb-3">
-                                <label class="form-label">Комментарий</label>
-                                <textarea name="comment" rows="10" placeholder="Комментарий" class="form-control" id="comment">${result[0].comment == null ? '' : result[0].comment}</textarea>
-                            </div>
-                        </div>       
-                    </div>
-                </fieldset>
-            </form>
-        `)
+                        <!-- End Tab Content -->
 
-        userModal.show();
-        // document.querySelector('#stats').innerHTML = '';
-        // window.scrollTo({
-        //     top: 0,
-        //     behavior: "smooth"
-        // });
-    } catch (error) {
-        console.error('Ошибка:', error);
-    }
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.querySelector('body').append(modalWrapper);
+    
+    // Modal Events
+    const editUserModal = document.getElementById('editUserModal');
+    editUserModal && editUserModal.addEventListener('show.bs.modal', async (event) => {
+        const button = event.relatedTarget;
+        const inn = button.getAttribute('data-bs-inn');
+        LoadingState("#comp_result");
+        const res = await GetCompData(inn);
+        const debtor = res.data;
+        const founders = debtor?.Учред?.ИнОрг.concat(debtor?.Учред.ПИФ, debtor?.Учред.РФ, debtor?.Учред.РосОрг, debtor?.Учред.ФЛ);
+        let finansi = JSON.parse(res.finansi);
+        finansi = finansi && Object?.entries(finansi)?.filter(item => item[0] >= 2015);
+        finansi = finansi && Object?.fromEntries(finansi);
+
+        debtorInfo(debtor, founders);
+        debtoRelations(founders);
+        finansi && debtorFinanse(finansi);
+    });
+});
+
+function debtorInfo(debtor, founders) {
+
+    editUserModal.querySelector('.modal-title').innerHTML = debtor.НаимСокр;
+    editUserModal.querySelector("#comp_result").innerHTML = `
+        <div class="accordion" id="accordion">
+            <div class="accordion-item">
+                <div class="accordion-header" id="heading">
+                    <a class="accordion-button bg-light" role="button" data-bs-toggle="collapse" data-bs-target="#about" aria-expanded="true" aria-controls="about">О должнике</a>
+                </div>
+                <div id="about" class="accordion-collapse collapse show" aria-labelledby="heading" data-bs-parent="#accordion">
+                    <div class="accordion-body">
+                        <ul class="list-unstyled list-py-2 text-dark mt-3 mb-0">
+                            <li><b>ИНН:</b> ${debtor.ИНН}</li>
+                            <li><b>ОГРН:</b> ${debtor.ОГРН}</li>
+                            <li><b>Статус:</b> ${debtor?.Статус?.Наим}</li>
+                            <li><b>Уставный капитал:</b> ${debtor?.УстКап?.Сумма}</li>
+                            <li><b>ОКВЭД:</b> ${debtor?.ОКВЭД?.Наим} (${debtor?.ОКВЭД?.Код})</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header" id="heading">
+                    <a class="accordion-button bg-light collapsed" role="button" data-bs-toggle="collapse" data-bs-target="#contacts" aria-expanded="false" aria-controls="contacts">Контакты</a>
+                </div>
+                <div id="contacts" class="accordion-collapse collapse" aria-labelledby="heading" data-bs-parent="#accordion">
+                    <div class="accordion-body">
+                        <ul class="list-unstyled list-py-2 text-dark mt-3 mb-0">
+                            <li><b>ВебСайт:</b> ${debtor?.Контакты?.ВебСайт}</li>
+                            <li><b>Телефоны:</b> ${debtor?.Контакты?.Тел?.map(item=>item)}</li>
+                            <li><b>Адрес:</b> ${debtor.ЮрАдрес.АдресРФ}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header" id="heading">
+                    <a class="accordion-button bg-light collapsed" role="button" data-bs-toggle="collapse" data-bs-target="#managers" aria-expanded="false" aria-controls="managers">Руководство</a>
+                </div>
+                <div id="managers" class="accordion-collapse collapse" aria-labelledby="heading" data-bs-parent="#accordion">
+                    <div class="accordion-body">
+                        <ul class="list-unstyled list-py-2 text-dark mt-3 mb-0">
+                            ${debtor?.Руковод?.map(item=> `<li><b>${item?.НаимДолжн}:</b> ${item?.ФИО}(ИНН: ${item?.ИНН})</li>`)}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header" id="heading">
+                    <a class="accordion-button bg-light collapsed" role="button" data-bs-toggle="collapse" data-bs-target="#founders" aria-expanded="false" aria-controls="founders">Учредители</a>
+                </div>
+                <div id="founders" class="accordion-collapse collapse" aria-labelledby="heading" data-bs-parent="#accordion">
+                    <div class="accordion-body">
+                        <ul class="list-group list-group-flush list-group-start-bordered mt-3 mb-0">
+                            ${founders && founders.map(item => {
+                                return `
+                                    <li class="list-group-item">
+                                        <div class="list-group-item-action border-primary" href="#">
+                                            <div class="row">
+                                                <div class="col-sm mb-2 mb-sm-0">
+                                                    <h3 class="fw-normal mb-1">${item?.ФИО ? item?.ФИО : item?.НаимСокр}</h3>
+                                                    <h4 class="text-inherit">ИНН: ${item?.ИНН}</h4>
+                                                    <h4 class="text-body">Доля: ${item?.Доля?.Номинал} (${item?.Доля?.Процент}%)</h4>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                `;
+                            }).join(' ')}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
 }
+
+async function debtorFinanse(finansi) {
+    let accCodes = await GetCodes();
+    let trows;
+
+    trows = accCodes.map((code, cidx) => {
+        if(code.code < 1999) {
+            return `
+                ${`
+                    <tr>
+                        <td>${code.name} (${code.code})</td>
+                        ${Object.entries(finansi).map((year, index) => {
+                            return year[1][code?.code] ? `<td>${new Intl.NumberFormat("ru-RU").format(year[1][code?.code])}</td>` : `<td></td>`;
+                        }).join(' ')}
+                    </tr>
+                `}
+            `
+        };
+    }).join(' ')
+
+    let finTable = `
+        <div class="row justify-content-between align-items-center flex-grow-1">
+            <div class="col-md">
+                <h6 class="card-header-title">Все суммы указаны в тысячах рублей</h6>
+            </div>
+            <div class="col-auto">
+                <div class="dropdown">
+                    <button class="btn btn-ghost-secondary" type="button" id="dropdownMenuButtonGhostPrimary"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-table"></i>
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButtonGhostPrimary">
+                        ${Object.entries(finansi).map((year, index) => {
+                            return `
+                                <div class="d-flex align-items-center justify-content-between form-check form-switch form-switch-between mb-3">
+                                    <label class="form-check-label">${year[0]}</label>
+                                    <input type="checkbox" id="toggleColumn_${year[0]}" class="form-check-input" checked>
+                                </div>
+                            `;
+                        }).join(' ')}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="js-sticky-header">
+            <div class="table-responsive datatable-custom">
+                <table id="finansi-table" class="js-datatable table-sm table table-thead-bordered table-align-middle card-table" data-page-length='50' data-hs-datatables-options='{"order": [] }'>
+
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Наименование</th>
+                            ${Object.entries(finansi).map((year) => `<th>${year[0]}</th>`).join(' ')}
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        ${trows}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `
+
+    editUserModal.querySelector("#finansi").innerHTML = finTable;
+    
+    HSCore.components.HSDatatables.init('.js-datatable');
+    const datatableSortingColumn = HSCore.components.HSDatatables.getItem('finansi-table')
+
+    // const StickyHeader = new HSTableStickyHeader('.js-sticky-header').init();
+    
+    Object.entries(finansi).map((year, index) => {
+        document.getElementById(`toggleColumn_${year[0]}`).addEventListener('change', function (e) {
+            datatableSortingColumn.columns(index+1).visible(e.target.checked)
+        })
+    });
+
+}
+
+async function debtoRelations(founders) {
+
+    let relations = founders && founders.map((item, idx) => {
+        return `
+            <div class="accordion-item">
+                <div class="accordion-header" id="heading-${idx}">
+                    <a class="accordion-button collapsed" role="button" data-bs-toggle="collapse" data-bs-target="#accordion-${idx}" aria-expanded="false" aria-controls="accordion-${idx}">
+                        ${item?.ФИО ? `${item?.ФИО} &nbsp;&nbsp; <span class="badge bg-secondary">Ру - ${item?.СвязРуковод?.length}</span> &nbsp; <span class="badge bg-info">Уч - ${item?.СвязУчред?.length}</span>` : item?.НаимСокр}
+                    </a>
+                </div>
+                <div id="accordion-${idx}" class="accordion-collapse collapse" aria-labelledby="heading-${idx}" data-bs-parent="#comp_relations">
+                    <div id="inn-${item?.ИНН}" class="accordion-body">
+                        <span class="divider-center">Руководитель</span>
+                        <ul id="managers" class="list-group list-group-flush list-group-start-bordered"></ul>
+
+                        <span class="divider-center">Учредитель</span>
+                        <ul id="founders" class="list-group list-group-flush list-group-start-bordered"></ul>
+                    </div>
+                </div>
+            </div>
+        `
+    }).join(' ');
+
+    editUserModal.querySelector("#comp_relations").innerHTML = relations;
+
+    founders && await renderManagers(founders);
+}
+
+async function renderManagers(founders) {
+    
+    founders.map(founder => {
+        let managersRow = document.querySelector(`#inn-${founder.ИНН} > #managers`);
+        let foundersRow = document.querySelector(`#inn-${founder.ИНН} > #founders`);
+        
+        founder.СвязРуковод && founder.СвязРуковод.map(async (ogrn, oidx) => {
+            let res = await GetCompData(false, ogrn);
+            let compData = res?.data;
+            let bo_nalog = JSON.parse(res?.bo_nalog);
+
+            const newLi = document.createElement("li");
+            newLi.className = "list-group-item";
+            newLi.innerHTML = `
+                <div class="list-group-item-action border-secondary" href="#">
+                    <div class="row">
+                        <div class="col-sm mb-2 mb-sm-0">
+                            <h3 class="fw-normal mb-1">${compData?.НаимСокр}</h3>
+                            <h4 class="text-inherit">ИНН: ${compData?.ИНН}</h4>
+                        </div>
+                        ${bo_nalog ? `
+                            <div class="col-sm mb-2 mb-sm-0">
+                                <a href="https://bo.nalog.ru/organizations-card/${bo_nalog.id}" class="icon-link" target="_blank" rel="noopener noreferrer">
+                                    Отчетность <i class="bi bi-box-arrow-up-right"></i>
+                                </a><br>
+                                ${bo_nalog.bfo.map(item => {
+                                    return item.actives && `${item.period}г. - <span class="badge bg-soft-secondary text-secondary">${item.actives * 1000} ₽</span>`
+                                }).join('<br>')}
+                            </div>
+                            ` : ``
+                        }
+                    </div>
+                </div>
+            `;
+            managersRow.append(newLi);
+        });
+        
+        founder.СвязУчред && founder.СвязУчред.map(async (ogrn, oidx) => {
+            let res = await GetCompData(false, ogrn);
+            let compData = res?.data;
+            let bo_nalog = JSON.parse(res?.bo_nalog);
+            
+            const newLi = document.createElement("li");
+            newLi.className = "list-group-item";
+            newLi.innerHTML = `
+                <div class="list-group-item-action border-info" href="#">
+                    <div class="row">
+                        <div class="col-sm mb-2 mb-sm-0">
+                            <h3 class="fw-normal mb-1">${compData?.НаимСокр}</h3>
+                            <h4 class="text-inherit">ИНН: ${compData?.ИНН}</h4>
+                            <h4 class="text-body"></h4>
+                        </div>
+                        ${bo_nalog ? `
+                            <div class="col-sm mb-2 mb-sm-0">
+                                <a href="https://bo.nalog.ru/organizations-card/${bo_nalog.id}" class="icon-link" target="_blank" rel="noopener noreferrer">
+                                    Отчетность <i class="bi bi-box-arrow-up-right"></i>
+                                </a><br>
+                                ${bo_nalog.bfo.map(item => {
+                                    return item.actives && `${item.period}г. - <span class="badge bg-soft-secondary text-secondary">${item.actives * 1000} ₽</span>`
+                                }).join('<br>')}
+                            </div>
+                            ` : ``
+                        }
+                    </div>
+                </div>
+            `;
+            foundersRow.append(newLi);
+        });
+    });
+}
+
+async function GetCodes() {
+    const res = await fetch(`/files/account_codes.json`);
+    const json = await res.json();
+    return Object.values(json);
+}
+
+async function GetCompData(inn, ogrn = false) {
+    let url = inn ? `/helpers/api.php?inn=${inn}` : `/helpers/api.php?ogrn=${ogrn}`;
+    const res = await fetch(url);
+    const json = await res.json();
+    return json;
+}
+
+function LoadingState(selector) {
+    editUserModal.querySelector(selector).innerHTML = `
+        <div class="d-flex justify-content-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Загрузка...</span>
+            </div>
+        </div>
+    `;
+}
+
+// const merge = (a, b, predicate = (a, b) => a === b) => {
+//     const c = [...a]; // copy to avoid side effects
+//     // add all items from B to copy C if they're not already present
+//     b.forEach((bItem) => (c.some((cItem) => predicate(bItem, cItem)) ? null : c.push(bItem)))
+//     return c;
+// }

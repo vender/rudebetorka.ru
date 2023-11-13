@@ -27,10 +27,18 @@
                             <span class="nav-link-title">Статистика</span>
                         </a>
                     </div>
+                    
+                    <div class="nav-item">
+                        <a class="nav-link <?php echo (CURRENT_PAGE == "inwork") ? 'active' : ''; ?>" href="inwork" data-placement="left">
+                            <i class="bi me-2 bi-briefcase nav-icon"></i>
+                            <span class="nav-link-title">В работе</span>
+                        </a>
+                    </div>
 
                     <div class="nav-item">
                         <a href="torgi" class="nav-link <?php echo (CURRENT_PAGE == "customers" || CURRENT_PAGE == "add_customer.php") ? 'active' : ''; ?>" data-placement="left">
-                            <i class="bi me-2 bi-person-circle nav-icon"></i><span class="nav-link-title">Лоты</span>
+                            <i class="bi me-2 bi-person-circle nav-icon"></i>
+                            <span class="nav-link-title">Лоты</span>
                         </a>
                     </div>
 
@@ -41,18 +49,30 @@
                     </div>
 
                     <div class="nav-item">
-                        <button class="nav-link dropdown-toggle" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" <?php echo (CURRENT_PAGE == "sender" || CURRENT_PAGE == "templates" || CURRENT_PAGE == "stats") ? 'aria-expanded="true"' : 'aria-expanded="false"'; ?>>
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#dashboard-settings" <?php echo (CURRENT_PAGE == "statuses" || CURRENT_PAGE == "templates" || CURRENT_PAGE == "stats") ? 'aria-expanded="true"' : 'aria-expanded="false"'; ?>>
+                            <i class="bi bi-sliders nav-icon"></i>
+                            <span class="nav-link-title">Настройки</span>
+                        </a>
+
+                        <div class="nav-collapse collapse <?php echo (CURRENT_PAGE == "statuses") ? 'show' : ''; ?>" id="dashboard-settings" bis_skin_checked="1">
+                            <a href="settings/statuses" class="nav-link <?php echo (CURRENT_PAGE == "statuses") ? 'active' : ''; ?>">Статусы</a>
+                        </div>
+                        
+                    </div>
+
+                    <!-- <div class="nav-item">
+                        <a class="nav-link dropdown-toggle" data-bs-toggle="collapse" data-bs-target="#dashboard-sender" <?php echo (CURRENT_PAGE == "sender" || CURRENT_PAGE == "templates" || CURRENT_PAGE == "stats") ? 'aria-expanded="true"' : 'aria-expanded="false"'; ?>>
                             <i class="bi-mailbox nav-icon"></i>
                             <span class="nav-link-title">Рассылки</span>
-                        </button>
+                        </a>
 
-                        <div class="nav-collapse collapse <?php echo (CURRENT_PAGE == "sender" || CURRENT_PAGE == "templates" || CURRENT_PAGE == "stats") ? 'show' : ''; ?>" id="dashboard-collapse" bis_skin_checked="1" style="">
+                        <div class="nav-collapse collapse <?php echo (CURRENT_PAGE == "sender" || CURRENT_PAGE == "templates" || CURRENT_PAGE == "stats") ? 'show' : ''; ?>" id="dashboard-sender" bis_skin_checked="1">
                             <a href="sender" class="nav-link <?php echo (CURRENT_PAGE == "sender") ? 'active' : ''; ?>">Отправка</a>
                             <a href="sender/templates" class="nav-link <?php echo (CURRENT_PAGE == "templates") ? 'active' : ''; ?>">Шаблоны</a>
                             <a href="sender/stats" class="nav-link <?php echo (CURRENT_PAGE == "stats") ? 'active' : ''; ?>">Статистика</a>
                         </div>
                         
-                    </div>
+                    </div> -->
 
                 </div>
 

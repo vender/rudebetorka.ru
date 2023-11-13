@@ -1,0 +1,2 @@
+.cache/composer/*
+.local/share/composer/.htaccess

@@ -1,13 +1,7 @@
-    <!-- Custom JS -->
-    <!-- <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script> -->
-    <!-- <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script> -->
-    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script> -->
-    <!-- <script src="./assets/js/admin.js"></script> -->
-
-    <!-- <script src="/assets/vendors/bootstrap/bootstrap.min.js"></script> -->
     <script src="/assets/js/vendor.min.js"></script>
     <script src="/assets/js/theme.min.js"></script>
     <script src="//cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="./assets/js/admin.js"></script>
 
     <script>
       (function() {
@@ -22,7 +16,7 @@
           new HSSideNav('.js-navbar-vertical-aside').init()
           // INITIALIZATION OF FORM SEARCH
           // =======================================================
-          // new HSFormSearch('.js-form-search')
+          new HSFormSearch('.js-form-search')
           // INITIALIZATION OF BOOTSTRAP DROPDOWN
           // =======================================================
           HSBsDropdown.init()
@@ -32,6 +26,11 @@
           // INITIALIZATION OF NAV SCROLLER
           // =======================================================
           new HsNavScroller('.js-nav-scroller')
+
+          var tooltipTriggerList = [].slice.call(document.querySelectorAll('title'))
+          var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+              return new bootstrap.Tooltip(tooltipTriggerEl)
+          });
         }
 
         // Function to set active style in the dorpdown menu and set icon for dropdown trigger
