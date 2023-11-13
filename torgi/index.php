@@ -45,10 +45,10 @@ include BASE_PATH_ADMIN . '/includes/header.php';
             <table class="table table-borderless table-thead-bordered table-nowrap table-align-middle card-table table-striped">
                 <thead>
                     <tr>
-                        <th width="50%">Описание</th>
+                        <th width="70%">Описание</th>
                         <th width="10%">Цены</th>
                         <!-- <th width="15%">Активы</th> -->
-                        <th width="40%">Продавец</th>
+                        <th width="20%">Продавец</th>
                     </tr>
                 </thead>
                 <tbody>
