@@ -11,7 +11,7 @@ $post_data = filter_input_array(INPUT_POST);
 $db->where('id',$post_data['id']);
 $db->get('torgi');
 
-if($db->count >=1 && !empty($post_data['lock_status']) && $_SERVER['REQUEST_METHOD'] == 'POST'){
+if($db->count >=1 && !empty($post_data['lock_status']) && $_SERVER['REQUEST_METHOD'] == 'POST' && $_SESSION['admin_type'] == 'super'){
     $db->where('id',$post_data['id']);
     if ($db->update('torgi', ['lock_status' => $post_data['lock_status']]))
         echo json_encode($post_data);

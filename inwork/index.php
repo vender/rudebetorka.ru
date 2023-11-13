@@ -3,9 +3,6 @@ session_start();
 require_once '../config.php';
 require_once BASE_PATH_ADMIN . '/includes/auth_validate.php';
 
-// Users class
-require_once BASE_PATH . '/lib/Users/Users.php';
-
 //Get DB instance. i.e instance of MYSQLiDB Library
 $db = getDbInstance();
 
@@ -91,7 +88,7 @@ include BASE_PATH_ADMIN . '/includes/header.php';
                                                                 <div class="lock-status ms-auto">
                                                                     <div class="form-check form-check-switch">
                                                                         <input class="form-check-input" type="checkbox" value="" id="Checkbox<?php echo $row['id'] ?>" <?php echo $row['lock_status'] == 'true' ? 'checked' : '' ?> data-torgid="<?php echo $row['id'] ?>" >
-                                                                        <label class="form-check-label btn-icon btn-xs rounded-circle" for="Checkbox<?php echo $row['id'] ?>" onclick="setLockStatus(this)">
+                                                                        <label class="form-check-label btn-icon btn-xs rounded-circle" <?php echo $_SESSION['admin_type'] == 'super' ? 'for="Checkbox'.$row['id'].'" onclick="setLockStatus(this)"' : ''; ?>>
                                                                             <span class="form-check-active" data-bs-toggle="tooltip" data-bs-placement="top" title="Заблокирован">
                                                                                 <i class="bi bi-lock-fill"></i>
                                                                             </span>
