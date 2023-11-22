@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function(){ // Аналог $(docu
     editUserModal && editUserModal.addEventListener('show.bs.modal', async (event) => {
         const button = event.relatedTarget;
         const inn = button.getAttribute('data-bs-inn');
-        LoadingState("#comp_result");
+        LoadingState(editUserModal, "#comp_result");
         const res = await GetCompData(inn);
         const debtor = res.data;
         const founders = debtor?.Учред?.ИнОрг.concat(debtor?.Учред.ПИФ, debtor?.Учред.РФ, debtor?.Учред.РосОрг, debtor?.Учред.ФЛ);
@@ -82,9 +82,51 @@ document.addEventListener('DOMContentLoaded', function(){ // Аналог $(docu
 
         debtorInfo(debtor, founders);
         debtoRelations(founders);
-        finansi && debtorFinanse(finansi);
+        finansi && debtorFinanse(finansi, editUserModal);
+        await getRelatedCompFinance();
     });
 });
+
+async function getRelatedCompFinance() {
+    let finansiModalWrapper = document.createElement("div");
+    finansiModalWrapper.innerHTML = `
+        <div id="finansiModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="finansiModalTitle" aria-hidden="true">
+            <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="finansiModalTitle"></h5>
+                        <button type="button" class="btn-close" data-bs-target="#editUserModal" data-bs-toggle="modal" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="finansi">
+                            <div class="d-flex justify-content-center">
+                                <div class="spinner-border" role="status">
+                                    <span class="visually-hidden">Загрузка...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    document.querySelector('body').append(finansiModalWrapper);
+
+    // Modal Events
+    const finansiModal = document.getElementById('finansiModal');
+    finansiModal && finansiModal.addEventListener('show.bs.modal', async (event) => {
+        const button = event.relatedTarget;
+        const inn = button.getAttribute('data-bs-inn');
+        LoadingState(finansiModal,"#finansiModal #finansi");
+        const res = await GetCompData(inn);
+        const debtor = res.data;
+        let finansi = JSON.parse(res.finansi);
+        finansiModal.querySelector('.modal-title').innerHTML = debtor.НаимСокр;
+        finansi = finansi && Object?.entries(finansi)?.filter(item => item[0] >= 2015);
+        finansi = finansi && Object?.fromEntries(finansi);
+        finansi && debtorFinanse(finansi, finansiModal);
+    });
+}
 
 function debtorInfo(debtor, founders) {
 
@@ -163,10 +205,10 @@ function debtorInfo(debtor, founders) {
     `;
 }
 
-async function debtorFinanse(finansi) {
+async function debtorFinanse(finansi, modal) {
     let accCodes = await GetCodes();
     let trows;
-
+    console.log(modal.id);
     trows = accCodes.map((code, cidx) => {
         if(code.code < 1999) {
             return `
@@ -187,8 +229,8 @@ async function debtorFinanse(finansi) {
             <div class="col-md">
                 <h6 class="card-header-title">Все суммы указаны в тысячах рублей</h6>
             </div>
-            <div class="col-auto">
-                <div class="dropdown">
+            ${modal.id == 'editUserModal' ? `<div class="col-auto">
+                <div id="year-filter" class="dropdown">
                     <button class="btn btn-ghost-secondary" type="button" id="dropdownMenuButtonGhostPrimary"
                         data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-table"></i>
@@ -205,7 +247,7 @@ async function debtorFinanse(finansi) {
 
                     </div>
                 </div>
-            </div>
+            </div>` : ''}
         </div>
         
         <div class="js-sticky-header">
@@ -227,18 +269,18 @@ async function debtorFinanse(finansi) {
         </div>
     `
 
-    editUserModal.querySelector("#finansi").innerHTML = finTable;
+    modal.querySelector("#finansi").innerHTML = finTable;
     
-    HSCore.components.HSDatatables.init('.js-datatable');
-    const datatableSortingColumn = HSCore.components.HSDatatables.getItem('finansi-table')
+    if(modal.id == 'editUserModal') {
+        HSCore.components.HSDatatables.init('.js-datatable');
+        const datatableSortingColumn = HSCore.components.HSDatatables.getItem('finansi-table');
 
-    // const StickyHeader = new HSTableStickyHeader('.js-sticky-header').init();
-    
-    Object.entries(finansi).map((year, index) => {
-        document.getElementById(`toggleColumn_${year[0]}`).addEventListener('change', function (e) {
-            datatableSortingColumn.columns(index+1).visible(e.target.checked)
-        })
-    });
+        Object.entries(finansi).map((year, index) => {
+            document.getElementById(`toggleColumn_${year[0]}`).addEventListener('change', function (e) {
+                datatableSortingColumn.columns(index+1).visible(e.target.checked)
+            })
+        });
+    }
 
 }
 
@@ -288,7 +330,7 @@ async function renderManagers(founders) {
                     <div class="row">
                         <div class="col-sm mb-2 mb-sm-0">
                             <h3 class="fw-normal mb-1">${compData?.НаимСокр}</h3>
-                            <h4 class="text-inherit">ИНН: ${compData?.ИНН}</h4>
+                            <h4 class="text-inherit">ИНН: <mark id="${compData?.ИНН}" style="cursor: pointer;" data-bs-toggle="modal" data-bs-inn="${compData?.ИНН}" data-bs-target="#finansiModal">${getCompStatus(bo_nalog)}${compData?.ИНН}</mark></h4>
                         </div>
                         ${bo_nalog ? `
                             <div class="col-sm mb-2 mb-sm-0">
@@ -319,7 +361,7 @@ async function renderManagers(founders) {
                     <div class="row">
                         <div class="col-sm mb-2 mb-sm-0">
                             <h3 class="fw-normal mb-1">${compData?.НаимСокр}</h3>
-                            <h4 class="text-inherit">ИНН: ${compData?.ИНН}</h4>
+                            <h4 class="text-inherit">ИНН: <mark id="${compData?.ИНН}" style="cursor: pointer;" data-bs-toggle="modal" data-bs-inn="${compData?.ИНН}" data-bs-target="#finansiModal">${getCompStatus(bo_nalog)}${compData?.ИНН}</mark></h4>
                             <h4 class="text-body"></h4>
                         </div>
                         ${bo_nalog ? `
@@ -341,6 +383,24 @@ async function renderManagers(founders) {
     });
 }
 
+function getCompStatus(bo_nalog) {
+    let inn_status = `<span class="legend-indicator"></span>`;
+    if(bo_nalog) {
+        switch (bo_nalog.statusCode) {
+            case 'ACTIVE':
+                inn_status = '<span class="legend-indicator bg-success"></span>';
+                break;
+            case 'LIQUIDATION_STAGE':
+                inn_status = '<span class="legend-indicator bg-warning"></span>';
+                break;
+            case 'INACTIVE':
+                inn_status = '<span class="legend-indicator bg-danger"></span>';
+                break;
+        }
+    }
+    return inn_status;
+}
+
 async function GetCodes() {
     const res = await fetch(`/files/account_codes.json`);
     const json = await res.json();
@@ -354,8 +414,8 @@ async function GetCompData(inn, ogrn = false) {
     return json;
 }
 
-function LoadingState(selector) {
-    editUserModal.querySelector(selector).innerHTML = `
+function LoadingState(modal, selector) {
+    modal.querySelector(selector).innerHTML = `
         <div class="d-flex justify-content-center">
             <div class="spinner-border" role="status">
                 <span class="visually-hidden">Загрузка...</span>

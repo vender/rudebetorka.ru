@@ -27,6 +27,13 @@
                             <span class="nav-link-title">Статистика</span>
                         </a>
                     </div>
+
+                    <div class="nav-item">
+                        <a href="torgi" class="nav-link <?php echo (CURRENT_PAGE == "torgi") ? 'active' : ''; ?>" data-placement="left">
+                            <i class="bi me-2 bi-person-circle nav-icon"></i>
+                            <span class="nav-link-title">Лоты</span>
+                        </a>
+                    </div>
                     
                     <div class="nav-item">
                         <a class="nav-link <?php echo (CURRENT_PAGE == "inwork") ? 'active' : ''; ?>" href="inwork" data-placement="left">
@@ -36,26 +43,14 @@
                     </div>
 
                     <div class="nav-item">
-                        <a href="torgi" class="nav-link <?php echo (CURRENT_PAGE == "customers" || CURRENT_PAGE == "add_customer.php") ? 'active' : ''; ?>" data-placement="left">
-                            <i class="bi me-2 bi-person-circle nav-icon"></i>
-                            <span class="nav-link-title">Лоты</span>
-                        </a>
-                    </div>
-
-                    <div class="nav-item">
-                        <a href="admin_users.php" class="nav-link <?php echo (CURRENT_PAGE == "admin_users.php" || CURRENT_PAGE == "add_admin.php") ? 'active' : ''; ?>" data-placement="left">
-                            <i class="bi me-2 bi-people-fill nav-icon"></i><span class="nav-link-title">Пользователи</span>
-                        </a>
-                    </div>
-
-                    <div class="nav-item">
                         <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#dashboard-settings" <?php echo (CURRENT_PAGE == "statuses" || CURRENT_PAGE == "templates" || CURRENT_PAGE == "stats") ? 'aria-expanded="true"' : 'aria-expanded="false"'; ?>>
                             <i class="bi bi-sliders nav-icon"></i>
                             <span class="nav-link-title">Настройки</span>
                         </a>
 
-                        <div class="nav-collapse collapse <?php echo (CURRENT_PAGE == "statuses") ? 'show' : ''; ?>" id="dashboard-settings" bis_skin_checked="1">
+                        <div class="nav-collapse collapse <?php echo (CURRENT_PAGE == "statuses" || CURRENT_PAGE == "admin_users.php" || CURRENT_PAGE == "add_admin.php") ? 'show' : ''; ?>" id="dashboard-settings" bis_skin_checked="1">
                             <a href="settings/statuses" class="nav-link <?php echo (CURRENT_PAGE == "statuses") ? 'active' : ''; ?>">Статусы</a>
+                            <a href="admin_users.php" class="nav-link <?php echo (CURRENT_PAGE == "admin_users.php" || CURRENT_PAGE == "add_admin.php") ? 'active' : ''; ?>" data-placement="left">Пользователи</a>
                         </div>
                         
                     </div>

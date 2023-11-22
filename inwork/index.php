@@ -48,7 +48,7 @@ include BASE_PATH_ADMIN . '/includes/header.php';
                                     
                                     <?php foreach ($rows as $row) : ?>
                                             <!-- Card -->
-                                            <div id="row-<?php echo $row['id'] ?>" class="js-sortable-link sortablejs-custom sortablejs-custom-rotate sortablejs-custom-handle <?php echo $row['lock_status'] == 'true' ? 'filtered' : '' ?>" data-torgid="<?php echo $row['id'] ?>">
+                                            <div id="row-<?php echo $row['id'] ?>" class="js-sortable-link sortablejs-custom sortablejs-custom-rotate sortablejs-custom-handle animate__animated <?php echo $row['lock_status'] == 'true' ? 'filtered' : '' ?>" data-torgid="<?php echo $row['id'] ?>">
                                                 <div class="card mb-3">
                                                     <div class="card-body">
                                                         <div class="d-flex mb-2">
@@ -65,7 +65,7 @@ include BASE_PATH_ADMIN . '/includes/header.php';
                                                                     </button>
 
                                                                     <div class="dropdown-menu dropdown-menu-end" aria-labelledby="kanbanProjectsGridDropdown6">
-                                                                        <a class="dropdown-item" href="#">
+                                                                        <!-- <a class="dropdown-item" href="#">
                                                                             <i class="bi-pencil dropdown-item-icon"></i> 1
                                                                         </a>
                                                                         <a class="dropdown-item" href="#">
@@ -75,9 +75,9 @@ include BASE_PATH_ADMIN . '/includes/header.php';
                                                                             <i class="bi-archive dropdown-item-icon"></i> 3
                                                                         </a>
 
-                                                                        <div class="dropdown-divider"></div>
+                                                                        <div class="dropdown-divider"></div> -->
 
-                                                                        <a class="dropdown-item text-danger" href="#">
+                                                                        <a class="dropdown-item text-danger" href="#" <?php echo $_SESSION['admin_type'] == 'super' ? 'onclick="deleteFromWork('.$row['id'].', event)"' : ''; ?>>
                                                                             <i class="bi-trash dropdown-item-icon text-danger"></i>
                                                                             Удалить
                                                                         </a>
@@ -164,6 +164,26 @@ include BASE_PATH_ADMIN . '/includes/header.php';
             formData.append("id", torgID);
             formData.append("lock_status", status);
             sendData(formData, 'setLockStatus');
+        }
+    }
+    
+    async function deleteFromWork(rowID, event) {
+        event.preventDefault()
+        if(rowID) {
+            const rowNod = document.querySelector(`#row-${rowID}`);
+            rowNod.classList.contains('filtered') ? rowNod.classList.remove('filtered') : rowNod.classList.add('filtered');
+            const formData = new FormData();
+            formData.append("id", rowID);
+
+            let deleteFromWork = await sendData(formData, 'deleteFromWork');
+            console.log(deleteFromWork);
+            if(deleteFromWork?.id) {
+                const torgRow = document.querySelector(`#row-${rowID}`);
+                torgRow.classList.add('animate__bounceOut');
+                torgRow.addEventListener('animationend', () => {
+                    torgRow.remove();
+                });
+            }
         }
     }
 

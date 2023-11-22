@@ -5,10 +5,8 @@ require_once '../config.php';
 require_once BASE_PATH_ADMIN . '/includes/auth_validate.php';
 require_once BASE_PATH_ADMIN . '/helpers/helpers.php';
 
-//Get DB instance. i.e instance of MYSQLiDB Library
 $db = getDbInstance();
 
-// Per page limit for pagination.
 $pagelimit = 20;
 
 // Get current page.
@@ -23,12 +21,20 @@ $db->join("debtors d", "t.debtor_id=d.debtor_id", "LEFT");
 // Set pagination limit
 $db->pageLimit = $pagelimit;
 // Get result of the query.
+
 $db->orderBy("id", "Desc");
-$db->where ("inwork != 'true'");
-$db->orWhere ("inwork", NULL, 'IS');
+
+$filter_watched = filter_input(INPUT_GET, 'watched');
+if (!empty($filter_watched) && $filter_watched != 'all') {
+    $db->where("t.watched", $filter_watched);
+}
+
+$db->where("t.inwork != 'true'");
+
 $rows = $db->arraybuilder()->paginate('torgi t', $page, $select);
 $total_pages = $db->totalPages;
 
+// print_r($db->getLastQuery());
 
 include BASE_PATH_ADMIN . '/includes/header.php';
 ?>
@@ -36,14 +42,43 @@ include BASE_PATH_ADMIN . '/includes/header.php';
 <main id="content" class="main">
     <div class="content container-fluid">
 
-        <h1 class="page-header-title mb-3">Лоты</h1>
-
         <?php include BASE_PATH_ADMIN . '/includes/flash_messages.php'; ?>
+
+        <div class="well filter-form mb-2">
+            <form class="form form-inline" action="">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <h1 class="page-header-title mb-3">Лоты</h1>
+                        <!-- <input type="text" class="form-control" id="input_search" name="search_string" placeholder="Поиск" value=""> -->
+                    </div>
+
+                    <div class="col-md-3">
+                        <select class="form-select form-select" name="watched" id="foilter_watched">
+                            <option value="all">Все</option>
+                            <option value="false" <?php echo $filter_watched == 'false' ? 'selected' : ''; ?> >Не просмотрен</option>
+                            <option value="true" <?php echo $filter_watched == 'true' ? 'selected' : ''; ?>>Просмотрен</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <input type="text" name="filter_price_min" value="" class="form-control" placeholder="Текущая цена от">
+                            
+                            <input type="submit" value="Применить" class="btn btn-success">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="torgi" class="btn btn-primary"><i class="bi bi-x-circle"></i> Сбросить</a>
+                    </div>
+
+                </div>
+            </form>
+        </div>
 
         <!-- Table -->
         <div class="table-responsive datatable-custom">
             <table class="table table-borderless table-thead-bordered table-nowrap table-align-middle card-table table-striped">
-                <thead>
+                <thead class="thead-light">
                     <tr>
                         <th width="70%">Описание</th>
                         <th width="10%">Цены</th>
@@ -142,7 +177,7 @@ include BASE_PATH_ADMIN . '/includes/header.php';
             formData.append("id", torgID);
             formData.append("inwork", 'true');
             let inwork = await sendData(formData, 'setInwork');
-            console.log(inwork);
+            
             if(inwork?.id) {
                 const torgRow = document.querySelector(`tr#torg-${inwork.id}`);
                 torgRow.classList.add('animate__fadeOutLeft');
