@@ -33,7 +33,7 @@ $response = $client->request('POST', '/script/submit.php', [
 $response = $client->request('POST', '/script/submit.php', [
     'form_params' => [
         'key' => 'pageitemcount',
-        'count' => 200,
+        'count' => 100,
         'page' => ''
     ],
     'verify' => false
@@ -79,13 +79,14 @@ foreach($html->find('div.torg') as $l) {
         'dates_torg' => $dates_torg ? preg_replace("/  +/", '', $dates_torg->innertext) : ''
     ];
 
+    $data_to_store['inns_list'] = searchInnsInText($data_to_store['text']);
+    // print_r($data_to_store['inns_list']);
+
     if(!empty($number)) {
         $db->where ("number", $number);
         $lot = $db->getOne ("torgi");
         if(!$lot) $last_id = $db->insert ('torgi', $data_to_store);
     }
-
-    // print_r($data_to_store);
 
     $db->where("debtor_id", $data_to_store['debtor_id']);
     $debtor_row = $db->getOne("debtors");
@@ -112,6 +113,7 @@ foreach($html->find('div.torg') as $l) {
         $debtor_nalog = json_decode($debtor_nalog, true);
         if(!empty($debtor_nalog['content'][0])) {
             $debtor_data['bo_nalog'] = json_encode($debtor_nalog['content'][0]);
+            $debtor_data['status'] = !empty($debtor_nalog['content'][0]['statusCode']) ? $debtor_nalog['content'][0]['statusCode'] : '';
         }
 
         $debtor_id = $db->insert('debtors', $debtor_data);
@@ -124,6 +126,30 @@ foreach($html->find('div.torg') as $l) {
 
 }
 
-
-
 print_r("Лоты добавленны");
+
+function searchInnsInText($text) {
+    $allStatuses = NULL;
+    if(!empty($text)) {
+        preg_match_all('#(?<!\d)\d{10}(?!\d)#', $text, $find_inn);
+        foreach(array_unique($find_inn[0]) as $inn) {
+            $get_status = getCompBfoStatus($inn);
+            if($get_status) {
+                $allStatuses[] = $get_status;
+            }
+        }
+        $allStatuses = json_encode($allStatuses);
+    }
+    return $allStatuses;
+}
+
+function getCompBfoStatus($inn) {
+    if(!empty($inn)){
+        $debtor_nalog = file_get_contents('https://bo.nalog.ru/nbo/organizations/search?query='.($inn ? $inn : ''));
+        $debtor_nalog = json_decode($debtor_nalog, true);
+        if(!empty($debtor_nalog['content'][0]['statusCode'])) {
+            return $debtor_nalog['content'][0]['statusCode'];
+        }
+    }
+    return false;
+}
