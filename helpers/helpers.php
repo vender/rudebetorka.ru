@@ -123,14 +123,14 @@ function xss_clean($string = ''){
 
 function search_inn($text) {
     preg_match_all('#(?<!\d)\d{10}(?!\d)#', $text, $find_inn);
-
+	
     if(!empty($find_inn[0])) {
 
-        foreach($find_inn[0] as $inn) {
+        foreach(array_unique($find_inn[0]) as $inn) {
             $nalog = file_get_contents('https://bo.nalog.ru/nbo/organizations/search?query='.$inn);
             $nalog = json_decode($nalog, true);
             $inn_status = '<span class="legend-indicator"></span>';
-            if(!empty($nalog['content'])) {
+            if(!empty($nalog['content'][0]['statusCode'])) {
                 switch ($nalog['content'][0]['statusCode']) {
                     case 'ACTIVE':
                         $inn_status = '<span class="legend-indicator bg-success"></span>';
@@ -144,7 +144,7 @@ function search_inn($text) {
                 }
             }
 
-            $text = str_replace($inn, '<mark id="'.$inn.'" style="cursor: pointer;" data-bs-toggle="modal" data-bs-inn="'.$inn.'" data-bs-target="#editUserModal"><span data-bs-toggle="tooltip" data-bs-html="true" title="'.getBfoNalog($nalog).'">'.$inn_status.$inn.'</span></mark>', $text);
+            $text = str_replace($inn, '<mark id="'.$inn.'" style="cursor: pointer;" data-bs-toggle="modal" data-bs-inn="'.$inn.'" data-bs-target="#editUserModal"><span data-bs-toggle="tooltip" data-bs-html="true" title="'.getBfoNalog($nalog).'">'.$inn_status.$inn.'</span></mark>', $text, $count);
         }
         
     };

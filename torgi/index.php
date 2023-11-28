@@ -15,7 +15,7 @@ if (!$page) {
     $page = 1;
 }
 
-$select = array('t.id', 't.number', 't.title', 't.text', 't.sum', 't.step', 't.deposit', 't.debtor_id', 't.lot_created', 't.created_at', 't.dates_from', 't.dates_torg', 't.watched', 'd.name', 'd.inn', 'd.bo_nalog');
+$select = array('t.id', 't.number', 't.title', 't.text', 't.sum', 't.step', 't.deposit', 't.debtor_id', 't.lot_created', 't.created_at', 't.dates_from', 't.dates_torg', 't.watched', 't.inns_list', 'd.name', 'd.inn', 'd.bo_nalog');
 $db->join("debtors d", "t.debtor_id=d.debtor_id", "LEFT");
 
 // Set pagination limit
@@ -29,12 +29,17 @@ if (!empty($filter_watched) && $filter_watched != 'all') {
     $db->where("t.watched", $filter_watched);
 }
 
+$filter_status = filter_input(INPUT_GET, 'inn_status');
+if (!empty($filter_status)) {
+    $db->where ("inns_list", '%"'.$filter_status.'"%', 'like');
+}
+
 $db->where("t.inwork != 'true'");
 
 $rows = $db->arraybuilder()->paginate('torgi t', $page, $select);
 $total_pages = $db->totalPages;
 
-// print_r($db->getLastQuery());
+// print_r($rows);
 
 include BASE_PATH_ADMIN . '/includes/header.php';
 ?>
@@ -53,21 +58,40 @@ include BASE_PATH_ADMIN . '/includes/header.php';
                     </div>
 
                     <div class="col-md-3">
-                        <select class="form-select form-select" name="watched" id="foilter_watched">
+                        <select class="js-select form-select form-select" name="watched" id="filter_watched" autocomplete="off"
+                            data-hs-tom-select-options='{
+                                "placeholder": "",
+                                "hideSearch": true
+                            }'
+                        >
                             <option value="all">Все</option>
                             <option value="false" <?php echo $filter_watched == 'false' ? 'selected' : ''; ?> >Не просмотрен</option>
                             <option value="true" <?php echo $filter_watched == 'true' ? 'selected' : ''; ?>>Просмотрен</option>
                         </select>
                     </div>
+                    
+                    <div class="col-md-3">
+                        <select class="js-select form-select form-select" name="inn_status" id="filter_watched" autocomplete="off"
+                            data-hs-tom-select-options='{
+                                "placeholder": "Статус компании",
+                                "hideSearch": true
+                            }'
+                        >
+                            <option value="">Статус компании</option>
+                            <option value="LIQUIDATION_STAGE" data-option-template='<span class="d-flex align-items-center"><span class="legend-indicator bg-warning"></span>Стадия ликвидации</span>' <?php echo $filter_status == 'LIQUIDATION_STAGE' ? 'selected' : ''; ?> >Стадия ликвидации</option>
+                            <option value="INACTIVE" data-option-template='<span class="d-flex align-items-center"><span class="legend-indicator bg-danger"></span>Не действует</span>' <?php echo $filter_status == 'INACTIVE' ? 'selected' : ''; ?> >Не действует</option>
+                            <option value="ACTIVE" data-option-template='<span class="d-flex align-items-center"><span class="legend-indicator bg-success"></span>Действует</span>' <?php echo $filter_status == 'ACTIVE' ? 'selected' : ''; ?> >Действует</option>
+                        </select>
+                    </div>
 
-                    <div class="col-md-4">
+                    <!-- <div class="col-md-2">
                         <div class="input-group">
                             <input type="text" name="filter_price_min" value="" class="form-control" placeholder="Текущая цена от">
-                            
-                            <input type="submit" value="Применить" class="btn btn-success">
                         </div>
-                    </div>
-                    <div class="col-md-2">
+                    </div> -->
+
+                    <div class="col-md-3">
+                        <input type="submit" value="Применить" class="btn btn-success">
                         <a href="torgi" class="btn btn-primary"><i class="bi bi-x-circle"></i> Сбросить</a>
                     </div>
 
@@ -82,7 +106,6 @@ include BASE_PATH_ADMIN . '/includes/header.php';
                     <tr>
                         <th width="70%">Описание</th>
                         <th width="10%">Цены</th>
-                        <!-- <th width="15%">Активы</th> -->
                         <th width="20%">Продавец</th>
                     </tr>
                 </thead>

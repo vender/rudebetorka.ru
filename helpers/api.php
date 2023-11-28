@@ -2,7 +2,7 @@
 require '../vendor/autoload.php';
 session_start();
 require_once '../config.php';
-require_once BASE_PATH_ADMIN . '/includes/auth_validate.php';
+// require_once BASE_PATH_ADMIN . '/includes/auth_validate.php';
 
 $db = getDbInstance();
 

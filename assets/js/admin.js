@@ -208,7 +208,7 @@ function debtorInfo(debtor, founders) {
 async function debtorFinanse(finansi, modal) {
     let accCodes = await GetCodes();
     let trows;
-    console.log(modal.id);
+
     trows = accCodes.map((code, cidx) => {
         if(code.code < 1999) {
             return `
@@ -352,7 +352,7 @@ async function renderManagers(founders) {
         founder.СвязУчред && founder.СвязУчред.map(async (ogrn, oidx) => {
             let res = await GetCompData(false, ogrn);
             let compData = res?.data;
-            let bo_nalog = JSON.parse(res?.bo_nalog);
+            let bo_nalog = res?.bo_nalog && JSON.parse(res.bo_nalog);
             
             const newLi = document.createElement("li");
             newLi.className = "list-group-item";
